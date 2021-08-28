@@ -1,0 +1,20 @@
+.material-icons {
+    color: red;
+}
+
+.material-icons.orange600 { 
+    color: #FB8C00; 
+}
+
+span {
+    text-align: top;
+}
+
+.material-icons:hover {
+    cursor: pointer;
+    text-shadow: 0px 0px 20px red;
+}
+.editPost:hover {
+    cursor: pointer; 
+    color: #0000EE;
+}

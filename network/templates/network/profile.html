@@ -1,0 +1,103 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div id="edit-post">
+        <h3>Edit Post</h3>
+        <form id="edit-post-form" method="put">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea id="content-edit" class="form-control" autofocus type="text" name="content"></textarea>
+            </div>
+            <div class="form-group">
+                <input id="submitbtn" class="btn btn-primary" type="submit" value="Save">
+            </div>
+        </form>
+    </div>
+    
+    <div id="main">
+
+        <div id="profile">
+        <br>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">User: {{target}}</h5>
+                    <p class="card-text">Followers: <span id="followers">{{ followers.count }}</span></p>
+                    <p class="card-text">Following: {{following.count}}</p>
+                    {% if user.is_authenticated and request.user != target %}
+                        {% if not is_followed %}
+                        <input id="follow" class="btn btn-primary" type="submit" onclick="follow('{{username}}')" value="Follow">
+                        {% else %}
+                        <input id="follow" class="btn btn-primary" type="submit" onclick="follow('{{username}}')" value="Unfollow">
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div id="userPosts">
+        <br>
+        <h3>{{ target }}'s posts:</h3>
+        {% for post in page_obj %}
+            <br>
+            <div class="card">
+                <div class="card-body">
+                    <p>{{post.author}}
+                    {% if request.user == post.author %}
+                        <span class="editPost" id="editPost{{post.id}}" onclick="editPost({{post.id}})">Edit post</span>
+                    {% endif %}
+                    </p>
+                    <p id="content{{post.id}}" class="card-text">{{post.content}}</p>
+                    <p class="card-text"><small class="text-muted">{{post.timestamp}}</small></p>
+                    {% if request.user in post.likes.all %}
+                        <span id="likeIcon{{post.id}}" class="material-icons" onclick="like({{post.id}})">favorite</span>
+                    {% else %}
+                        <span id="likeIcon{{post.id}}" class="material-icons" onclick="like({{post.id}})">favorite_border</span>
+                    {% endif %}
+                    <span id="counter{{post.id}}">{{post.likes.count}}</span>
+                </div>
+            </div>
+            
+        {% endfor %}
+        </div>
+        <br>
+        </div>
+        <div id="pagination">
+            <nav aria-label="...">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" tabindex="-1" aria-disabled="true" >First</a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{page_obj.previous_page_number}}</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active" aria-current="page">
+                    <a id="current_page" class="page-link" href="#">{{ page_obj.number }}</a>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">{{page_obj.next_page_number}}</a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+            </nav>
+        </div>
+    </div>
+     
+    {% endblock body %}
+</div>
